@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Create account · Finance Tracker Pro{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-copy">
+    <p class="eyebrow">START WITH CLARITY</p>
+    <h1>Your financial picture, in one dashboard.</h1>
+    <p>Data stays in your own database. Passwords are protected with scrypt and accounts are isolated by design.</p>
+  </div>
+  <form class="panel auth-card" method="post" action="/register">
+    <h2>Create account</h2>
+    {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+    <label>Name<input required name="name" autocomplete="name"></label>
+    <label>Email<input required type="email" name="email" autocomplete="email"></label>
+    <label>Password<input required minlength="8" type="password" name="password" autocomplete="new-password"></label>
+    <button class="primary" type="submit">Create account</button>
+    <p class="muted">Already registered? <a href="/login">Sign in</a></p>
+  </form>
+</section>
+{% endblock %}

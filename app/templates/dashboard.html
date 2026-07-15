@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-row">
+  <div><p class="eyebrow">FINANCIAL OVERVIEW</p><h1>Welcome, {{ user.name.split()[0] }}.</h1><p class="muted">A clear view of every rupee you recorded.</p></div>
+  <a class="button secondary" href="/export.csv">Export CSV</a>
+</section>
+
+{% if request.query_params.get('error') %}<p class="alert">{{ request.query_params.get('error') }}</p>{% endif %}
+
+<section class="stats-grid">
+  <article class="stat-card"><span>Total balance</span><strong>{{ summary.balance_cents | money }}</strong><small>Income minus expenses</small></article>
+  <article class="stat-card income"><span>Total income</span><strong>{{ summary.income_cents | money }}</strong><small>Across {{ summary.count }} records</small></article>
+  <article class="stat-card expense"><span>Total expenses</span><strong>{{ summary.expense_cents | money }}</strong><small>All recorded spending</small></article>
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel">
+    <div class="section-heading"><div><p class="eyebrow">NEW ENTRY</p><h2>Add transaction</h2></div></div>
+    <form method="post" action="/transactions" class="transaction-form">
+      <label>Type<select name="kind"><option value="expense">Expense</option><option value="income">Income</option></select></label>
+      <label>Category<input required name="category" placeholder="Food, salary, travel..."></label>
+      <label>Amount (₹)<input required min="0.01" step="0.01" type="number" name="amount" placeholder="1200.00"></label>
+      <label>Date<input required type="date" name="occurred_on" value="{{ today.isoformat() }}"></label>
+      <label class="full">Note<input name="note" maxlength="180" placeholder="Optional context"></label>
+      <button class="primary full" type="submit">Save transaction</button>
+    </form>
+  </article>
+  <article class="panel chart-panel">
+    <div class="section-heading"><div><p class="eyebrow">SPENDING MIX</p><h2>Expenses by category</h2></div></div>
+    {% if summary.categories %}<canvas id="categoryChart" aria-label="Expense category chart"></canvas>{% else %}<div class="empty-state">Add an expense to see your category mix.</div>{% endif %}
+  </article>
+</section>
+
+<section class="panel transactions-panel">
+  <div class="section-heading"><div><p class="eyebrow">LEDGER</p><h2>Recent transactions</h2></div><a href="/reports">Monthly report →</a></div>
+  {% if items %}
+  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Category</th><th>Note</th><th>Type</th><th class="right">Amount</th><th></th></tr></thead>
+  <tbody>{% for item in items %}<tr><td>{{ item.occurred_on }}</td><td><strong>{{ item.category }}</strong></td><td class="muted">{{ item.note or '—' }}</td><td><span class="pill {{ item.kind }}">{{ item.kind }}</span></td><td class="right amount {{ item.kind }}">{{ '+' if item.kind == 'income' else '−' }}{{ item.amount_cents | money }}</td><td><form method="post" action="/transactions/{{ item.id }}/delete"><button class="danger-link" aria-label="Delete {{ item.category }} transaction">Delete</button></form></td></tr>{% endfor %}</tbody></table></div>
+  {% else %}<div class="empty-state">No transactions yet. Add your first entry above.</div>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+{% if summary.categories %}<script>
+window.addEventListener('DOMContentLoaded', () => new Chart(document.getElementById('categoryChart'), {type:'doughnut',data:{labels:{{ summary.categories.keys() | list | tojson }},datasets:[{data:{{ summary.categories.values() | list | tojson }},backgroundColor:['#22c55e','#38bdf8','#a78bfa','#fb7185','#fbbf24','#2dd4bf'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom',labels:{color:'#aeb9ca',padding:18}}},cutout:'68%'}}));
+</script>{% endif %}
+{% endblock %}

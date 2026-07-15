@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Finance Tracker Pro{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/dashboard"><span>FT</span> Finance Tracker Pro</a>
+    {% if user %}
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/reports">Reports</a>
+      <form method="post" action="/logout"><button class="link-button">Sign out</button></form>
+    </nav>
+    {% endif %}
+  </header>
+  <main class="page-shell">{% block content %}{% endblock %}</main>
+  <footer>Built by Mayank Singh · Privacy-first local storage</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

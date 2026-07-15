@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Finance Tracker Pro{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-copy">
+    <p class="eyebrow">PERSONAL FINANCE, WITHOUT THE NOISE</p>
+    <h1>Know where your money goes.</h1>
+    <p>Track income and spending, understand category trends, and export clean records whenever you need them.</p>
+  </div>
+  <form class="panel auth-card" method="post" action="/login">
+    <h2>Welcome back</h2>
+    {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+    <label>Email<input required type="email" name="email" autocomplete="email"></label>
+    <label>Password<input required type="password" name="password" autocomplete="current-password"></label>
+    <button class="primary" type="submit">Sign in</button>
+    <p class="muted">New here? <a href="/register">Create an account</a></p>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+services:
+  finance-tracker:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-local-docker-change-me}
+      DATABASE_PATH: /app/data/finance.db
+    volumes:
+      - finance-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  finance-data:
